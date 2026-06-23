@@ -5,7 +5,7 @@
 // Daha önce ContactViewModel yalnızca form verisini taşıyordu;
 // bu model ise veritabanı/bellek kaydı için kullanılır.
 // =========================================================
-
+// ÖMMERRR
 namespace LiveLifeCoffee.Models
 {
     /// <summary>
