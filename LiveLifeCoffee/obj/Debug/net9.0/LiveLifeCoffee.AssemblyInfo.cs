@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LiveLifeCoffee")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a5568b255e2ee8a1362c6d80c4fcd0cc2f3b41a6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+014fbd68a7f162b6d979a78e850ffad1b24a7318")]
 [assembly: System.Reflection.AssemblyProductAttribute("LiveLifeCoffee")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LiveLifeCoffee")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -25,9 +25,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Bu satır olmadan Controller ve View'lar çalışmaz
 builder.Services.AddControllersWithViews();
 
-// Entity Framework Core - SQLite Veritabanı Bağlamını Ekle
+// Entity Framework Core - SQL Server Veritabanı Bağlamını Ekle
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=livelife.db"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Scoped: Her HTTP isteğinde yeni bir örnek oluşturulur (Veritabanı işlemleri için standarttır)
 // Eskiden bellek (RAM) kullandığımız için Singleton'dı. Şimdi veritabanına geçtiğimiz için Scoped yapıyoruz.
