@@ -1,0 +1,144 @@
+@* =========================================================
+   Views/Admin/Menu.cshtml
+   ADMİN - MENÜ YÖNETİMİ LİSTESİ
+   
+   Modeli: List<MenuItem>
+   Tüm menü ürünlerini listeler.
+   Her ürün için "Düzenle" ve "Sil" seçenekleri sunar.
+   ========================================================= *@
+
+@model List<LiveLifeCoffee.Models.MenuItem>
+
+@{
+    ViewData["Title"] = "Menü Yönetimi";
+}
+
+<div class="admin-page">
+
+    @* Sayfa başlık çubuğu *@
+    <div class="admin-header">
+        <div>
+            <h1>&#x2615; Menü Yönetimi</h1>
+            <p class="admin-welcome">Toplam @Model.Count ürün listeleniyor.</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+            @* Yeni ürün ekle butonu *@
+            <a href="@Url.Action("AddMenuItem", "Admin")" class="btn btn-primary">
+                &#x2795; Yeni Ürün Ekle
+            </a>
+            <a href="@Url.Action("Logout", "Admin")" class="btn btn-danger btn-sm">
+                &#x1F6AA; Çıkış Yap
+            </a>
+        </div>
+    </div>
+
+    @* Sekme navigasyonu — Aktif: Menü Yönetimi *@
+    <nav class="admin-tabs">
+        <a href="@Url.Action("Dashboard", "Admin")" class="admin-tab-link">
+            Kontrol Paneli
+        </a>
+        <a href="@Url.Action("Orders", "Admin")" class="admin-tab-link">
+            &#x1F4CB; Siparişler
+        </a>
+        <a href="@Url.Action("Messages", "Admin")" class="admin-tab-link">
+            &#x2709; Mesajlar
+        </a>
+        <a href="@Url.Action("Menu", "Admin")" class="admin-tab-link active">
+            &#x1F4DD; Menü Yönetimi
+        </a>
+        <a href="@Url.Action("Applications", "Admin")" class="admin-tab-link">
+            Başvurular
+        </a>
+    </nav>
+
+    @* Başarı/hata mesajları *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-error">@TempData["ErrorMessage"]</div>
+    }
+
+    @* ÜRÜNLERİ KATEGORİYE GÖRE GRUPLA VE LİSTELE *@
+    @{
+        @* Modeldeki ürünleri kategoriye göre gruplandır *@
+        var groupedItems = Model.GroupBy(m => m.Category).OrderBy(g => g.Key);
+    }
+
+    @foreach (var group in groupedItems)
+    {
+        @* Kategori başlığı *@
+        <h2 class="category-title">@group.Key</h2>
+
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="card-body" style="padding: 0;">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Ürün Adı</th>
+                            <th>Açıklama</th>
+                            <th>Fiyat</th>
+                            <th>Stok</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in group)
+                        {
+                            <tr>
+                                <td style="color: var(--color-text-muted); font-size: 0.85rem;">@item.Id</td>
+
+                                <td><strong>@item.Name</strong></td>
+
+                                @* Açıklama: 60 karakterle sınırla *@
+                                <td style="font-size: 0.875rem; color: var(--color-text-muted);">
+                                    @(item.Description.Length > 60 ? item.Description.Substring(0, 60) + "..." : item.Description)
+                                </td>
+
+                                <td class="price-tag">@item.Price.ToString("N2") ₺</td>
+
+                                @* Stok durumu: yeşil / kırmızı *@
+                                <td>
+                                    @if (item.IsAvailable)
+                                    {
+                                        <span style="color: var(--color-success); font-weight: 600;">&#x2713; Var</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: var(--color-error); font-weight: 600;">&#x2715; Yok</span>
+                                    }
+                                </td>
+
+                                @* İşlem butonları *@
+                                <td>
+                                    <div style="display:flex; gap:8px;">
+                                        @* Düzenle butonu *@
+                                        <a href="@Url.Action("EditMenuItem", "Admin", new { id = item.Id })"
+                                           class="btn btn-outline btn-sm">
+                                            &#x270E; Düzenle
+                                        </a>
+
+                                        @* SİLME FORMU: POST ile gönderilir; GET ile silme işlemi yapılmaz *@
+                                        <form asp-action="DeleteMenuItem" asp-controller="Admin" method="post"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('@item.Name ürününü silmek istediğinize emin misiniz?')">
+                                                &#x1F5D1; Sil
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>

@@ -1,0 +1,181 @@
+@* =========================================================
+   Views/Admin/ApplicationDetail.cshtml
+   BAŞVURU DETAY SAYFASI — ADMİN PANELİ
+
+   Model: JobApplication
+   Tek bir başvurunun tüm detaylarını gösterir.
+   Sayfa açıldığında başvuru otomatik olarak "okundu" işaretlenir.
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.JobApplication
+
+@{
+    ViewData["Title"] = $"Başvuru #{Model.Id}"; @* Dinamik sekme başlığı *@
+}
+
+<div class="admin-page">
+
+    @* ===================================================
+       BAŞLIK ÇUBUĞU
+       =================================================== *@
+    <div class="admin-header">
+        <div>
+            @* Sayfa başlığı: başvuru numarasını içeriyor *@
+            <h1>&#x1F4BC; Başvuru #@Model.Id.ToString("D4")</h1>
+            @* Başvuru tarihi *@
+            <p class="admin-welcome">
+                Gönderildi: @Model.AppliedAt.ToString("dd MMMM yyyy, HH:mm")
+            </p>
+        </div>
+        @* Güvenli çıkış butonu *@
+        <a href="@Url.Action("Logout", "Admin")" class="btn btn-danger btn-sm">
+            &#x1F6AA; Çıkış Yap
+        </a>
+    </div>
+
+    @* ===================================================
+       SEKME NAVİGASYONU
+       Aktif sekme: "Başvurular"
+       =================================================== *@
+    <nav class="admin-tabs">
+        @* Kontrol Paneli sekmesi *@
+        <a href="@Url.Action("Dashboard", "Admin")" class="admin-tab-link">
+            Kontrol Paneli
+        </a>
+        @* Siparişler sekmesi *@
+        <a href="@Url.Action("Orders", "Admin")" class="admin-tab-link">
+            &#x1F4CB; Siparişler
+        </a>
+        @* Mesajlar sekmesi *@
+        <a href="@Url.Action("Messages", "Admin")" class="admin-tab-link">
+            &#x2709; Mesajlar
+        </a>
+        @* Menü Yönetimi sekmesi *@
+        <a href="@Url.Action("Menu", "Admin")" class="admin-tab-link">
+            &#x1F4DD; Menü Yönetimi
+        </a>
+        @* Başvurular sekmesi: Bu kategori altında olduğundan aktif *@
+        <a href="@Url.Action("Applications", "Admin")" class="admin-tab-link active">
+            Başvurular
+        </a>
+    </nav>
+
+    @* ===================================================
+       BAŞVURU DETAY KARTI
+       Tek beyaz kart içinde tüm bilgiler.
+       =================================================== *@
+    <div class="card" style="max-width: 800px;">
+
+        @* Kart üst başlığı *@
+        <div class="card-header">
+            &#x1F464; @Model.FullName
+            @* Okundu durumu rozeti *@
+            @if (Model.IsRead)
+            {
+                @* Okunmuş: yeşil tonda rozet *@
+                <span class="status-badge" style="margin-left: 12px;">Görüldü</span>
+            }
+            else
+            {
+                @* Okunmamış: kırmızı "Yeni" rozeti *@
+                <span style="background: var(--color-error); color: white; border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; font-weight: 700; margin-left: 12px;">
+                    Yeni
+                </span>
+            }
+        </div>
+
+        <div class="card-body">
+
+            @* Kişisel Bilgiler alt başlığı *@
+            <h3 style="color: var(--color-primary-dark); font-size: 1rem; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--color-light-green);">
+                &#x1F4CB; Kişisel Bilgiler
+            </h3>
+
+            @* Bilgi satırları tablosu *@
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px;">
+
+                @* Ad Soyad satırı *@
+                <tr>
+                    <td style="padding: 10px 0; color: var(--color-text-muted); font-size: 0.875rem; width: 160px; font-weight: 500;">
+                        Ad Soyad
+                    </td>
+                    <td style="padding: 10px 0; font-weight: 600; color: var(--color-text-dark);">
+                        @Model.FullName
+                    </td>
+                </tr>
+
+                @* E-posta satırı *@
+                <tr style="border-top: 1px solid var(--color-border);">
+                    <td style="padding: 10px 0; color: var(--color-text-muted); font-size: 0.875rem; font-weight: 500;">
+                        E-posta
+                    </td>
+                    <td style="padding: 10px 0;">
+                        @* E-posta: tıklanabilir mailto linki *@
+                        <a href="mailto:@Model.Email">@Model.Email</a>
+                    </td>
+                </tr>
+
+                @* Telefon satırı *@
+                <tr style="border-top: 1px solid var(--color-border);">
+                    <td style="padding: 10px 0; color: var(--color-text-muted); font-size: 0.875rem; font-weight: 500;">
+                        Telefon
+                    </td>
+                    <td style="padding: 10px 0;">
+                        @* Telefon boşsa tire göster *@
+                        @(string.IsNullOrEmpty(Model.Phone) ? "—" : Model.Phone)
+                    </td>
+                </tr>
+
+                @* Başvurulan Pozisyon satırı *@
+                <tr style="border-top: 1px solid var(--color-border);">
+                    <td style="padding: 10px 0; color: var(--color-text-muted); font-size: 0.875rem; font-weight: 500;">
+                        Başvurulan Pozisyon
+                    </td>
+                    <td style="padding: 10px 0;">
+                        @* Pozisyon etiketi: vurgulu *@
+                        <span class="status-badge" style="background-color: var(--color-accent-light); color: var(--color-accent);">
+                            @Model.Position
+                        </span>
+                    </td>
+                </tr>
+
+                @* Başvuru Tarihi satırı *@
+                <tr style="border-top: 1px solid var(--color-border);">
+                    <td style="padding: 10px 0; color: var(--color-text-muted); font-size: 0.875rem; font-weight: 500;">
+                        Başvuru Tarihi
+                    </td>
+                    <td style="padding: 10px 0; color: var(--color-text-muted); font-size: 0.875rem;">
+                        @* Uzun tarih-saat formatı *@
+                        @Model.AppliedAt.ToString("dd MMMM yyyy, HH:mm")
+                    </td>
+                </tr>
+
+            </table>
+
+            @* Motivasyon Mektubu alt başlığı *@
+            <h3 style="color: var(--color-primary-dark); font-size: 1rem; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--color-light-green);">
+                &#x1F4DD; Motivasyon Mektubu
+            </h3>
+
+            @* Motivasyon mektubunun içeriği *@
+            <div style="background-color: var(--color-bg-light); border-radius: var(--border-radius); padding: 20px; line-height: 1.8; color: var(--color-text-dark); white-space: pre-wrap;">
+                @* pre-wrap: satır sonları ve boşluklar korunur *@
+                @Model.CoverLetter
+            </div>
+
+            @* Eylem Butonları *@
+            <div style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">
+                @* Başvurular listesine geri dön *@
+                <a href="@Url.Action("Applications", "Admin")" class="btn btn-outline">
+                    &larr; Başvurulara Dön
+                </a>
+                @* E-posta gönderme linki: varsayılan e-posta istemcisini açar *@
+                <a href="mailto:@Model.Email?subject=LiveLife Coffee – Başvurunuz Hakkında" class="btn btn-primary">
+                    &#x2709; E-posta Gönder
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>

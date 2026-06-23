@@ -1,0 +1,130 @@
+@* =========================================================
+   Views/Home/Contact.cshtml
+   İLETİŞİM SAYFASI
+   
+   Modeli: ContactViewModel
+   İki sütunlu layout:
+   - Sol: Kafenin iletişim bilgileri
+   - Sağ: Kullanıcının mesaj gönderebileceği form
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.ContactViewModel
+
+@{
+    ViewData["Title"] = "İletişim";
+    ViewData["Description"] = "LiveLife Coffee ile iletişime geçin. Adresimiz, telefon ve e-posta bilgilerimiz.";
+}
+
+<div class="contact-page">
+
+    @* ===================================================
+       SOL SÜTUN: İletişim Bilgileri
+       =================================================== *@
+    <div class="contact-info">
+        <h2>Bize Ulaşın</h2>
+
+        @* Adres bilgisi *@
+        <div class="contact-info-item">
+            <div class="ci-icon">&#x1F4CD;</div> @* Konum pini *@
+            <div>
+                <div class="ci-label">Adres</div>
+                <div class="ci-value">Yenişehir, Yurtkur Cd., 71450<br />Yahşihan/Kırıkkale</div>
+            </div>
+        </div>
+
+        @* Telefon bilgisi *@
+        <div class="contact-info-item">
+            <div class="ci-icon">&#x1F4DE;</div> @* Telefon *@
+            <div>
+                <div class="ci-label">Telefon</div>
+                <div class="ci-value">+90 (216) 123 45 67</div>
+            </div>
+        </div>
+
+        @* E-posta bilgisi *@
+        <div class="contact-info-item">
+            <div class="ci-icon">&#x2709;</div> @* Zarf *@
+            <div>
+                <div class="ci-label">E-posta</div>
+                <div class="ci-value">merhaba@livelifecoffee.com</div>
+            </div>
+        </div>
+
+        @* Çalışma saatleri *@
+        <div class="contact-info-item">
+            <div class="ci-icon">&#x1F551;</div> @* Saat *@
+            <div>
+                <div class="ci-label">Çalışma Saatleri</div>
+                <div class="ci-value">
+                    Hft. içi: 08:00 - 22:00<br />
+                    Hft. sonu: 09:00 - 23:00
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @* ===================================================
+       SAĞ SÜTUN: İletişim Formu
+       =================================================== *@
+    <div class="contact-form-box">
+        <h2>Mesaj Gönderin</h2>
+
+        @* Form başarıyla gönderilmişse teşekkür mesajı göster *@
+        @if (Model.IsSuccess)
+        {
+            <div class="alert alert-success">
+                &#x2713; Mesajınız başarıyla gönderildi! En kısa sürede geri döneceğiz.
+            </div>
+        }
+
+        @* ---- FORM ---- *@
+        @* asp-action: formun POST edileceği action
+           asp-controller: hangi Controller'a gideceği
+           method="post": HTTP POST isteği *@
+        <form asp-action="Contact" asp-controller="Home" method="post">
+            
+            @* CSRF koruma token'ı: ASP.NET otomatik ekler ve doğrular *@
+            @Html.AntiForgeryToken()
+
+            @* Doğrulama hatalarını özet olarak göster *@
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            @* Ad Soyad alanı *@
+            <div class="form-group">
+                <label asp-for="FullName"></label>
+                <input asp-for="FullName" type="text" placeholder="Adınız Soyadınız" />
+                <span asp-validation-for="FullName" class="field-validation-error"></span>
+            </div>
+
+            @* E-posta alanı *@
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" type="email" placeholder="ornek@email.com" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+
+            @* Konu alanı *@
+            <div class="form-group">
+                <label asp-for="Subject"></label>
+                <input asp-for="Subject" type="text" placeholder="Mesajınızın konusu" />
+                <span asp-validation-for="Subject" class="field-validation-error"></span>
+            </div>
+
+            @* Mesaj alanı *@
+            <div class="form-group">
+                <label asp-for="Message"></label>
+                <textarea asp-for="Message" placeholder="Mesajınızı buraya yazın..."></textarea>
+                <span asp-validation-for="Message" class="field-validation-error"></span>
+            </div>
+
+            @* Gönder butonu *@
+            <button type="submit" class="btn btn-primary btn-block">
+                Mesajı Gönder
+            </button>
+
+        </form>
+
+    </div>
+
+</div>

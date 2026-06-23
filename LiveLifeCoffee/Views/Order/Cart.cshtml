@@ -1,0 +1,132 @@
+@* =========================================================
+   Views/Order/Cart.cshtml
+   SEPET SAYFASI (SİPARİŞ VER)
+   
+   Modeli: List<CartItem>
+   Kullanıcının sepetindeki ürünleri tablo halinde gösterir.
+   Miktar güncelleme, ürün kaldırma ve siparişi tamamlama işlemleri.
+   
+   GİRİŞ ZORUNLU: Controller bu sayfaya girişsiz erişimi engeller.
+   ========================================================= *@
+
+@model List<LiveLifeCoffee.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Sepetim";
+    ViewData["Description"] = "Alışveriş sepetinim içeriği ve sipariş özeti.";
+}
+
+<div class="cart-page">
+    <h1>&#x1F6D2; Sepetim</h1>
+
+    @* Başarı ve hata bildirimleri *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-error">@TempData["ErrorMessage"]</div>
+    }
+
+    @* SEPET BOŞ DURUMU *@
+    @if (Model == null || !Model.Any())
+    {
+        <div class="empty-cart">
+            <div class="empty-icon">&#x1F6D2;</div>
+            <h2>Sepetiniz boş</h2>
+            <p class="text-muted" style="margin: 10px 0 24px;">
+                Sipariş vermek için menüden ürün ekleyin.
+            </p>
+            <a href="@Url.Action("Index", "Menu")" class="btn btn-primary">
+                Menüye Git
+            </a>
+        </div>
+    }
+    else
+    {
+        @* DOLU SEPET TABLOSU *@
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Ürün</th>
+                    <th>Birim Fiyat</th>
+                    <th>Miktar</th>
+                    <th>Toplam</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @* Her sepet kalemi için bir satır *@
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @* Ürün adı *@
+                        <td><strong>@item.Name</strong></td>
+
+                        @* Birim fiyat *@
+                        <td>@item.UnitPrice.ToString("N2") ₺</td>
+
+                        @* MİKTAR GÜNCELLEME FORMU *@
+                        @* Kullanıcı input'u değiştirip "Güncelle" e basınca POST eder *@
+                        <td>
+                            <form asp-action="UpdateQuantity" asp-controller="Order" method="post"
+                                  style="display:flex; gap:8px; align-items:center;">
+                                @Html.AntiForgeryToken()
+                                @* Hangi ürünün güncelleneceğini belirt *@
+                                <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                @* Mevcut miktarı gösteren, değiştirilebilir input *@
+                                <input type="number" name="quantity" value="@item.Quantity"
+                                       min="0" max="20" class="quantity-input"
+                                       title="Miktar (0 = Kaldır)" />
+                                <button type="submit" class="btn btn-outline btn-sm">Güncelle</button>
+                            </form>
+                        </td>
+
+                        @* Kalem toplam tutarı *@
+                        <td><strong>@item.TotalPrice.ToString("N2") ₺</strong></td>
+
+                        @* ÜRÜN KALDIR FORMU *@
+                        <td>
+                            <form asp-action="RemoveFromCart" asp-controller="Order" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Bu ürünü sepetten kaldırmak istediğinize emin misiniz?')">
+                                    Kaldır
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @* GENEL TOPLAM ALANI *@
+        <div class="cart-total">
+            <span class="total-label">Genel Toplam:</span>
+            @* Model'deki tüm kalemlerin toplam tutarını hesapla ve göster *@
+            <span class="total-amount">@Model.Sum(i => i.TotalPrice).ToString("N2") ₺</span>
+        </div>
+
+        @* EYLEM BUTONLARI: Alışverişe devam et veya siparişi tamamla *@
+        <div class="cart-actions">
+            
+            @* Menüye geri dön *@
+            <a href="@Url.Action("Index", "Menu")" class="btn btn-outline">
+                &larr; Alışverişe Devam Et
+            </a>
+
+            @* SİPARİŞİ TAMAMLA FORMU *@
+            @* POST isteği gönderir; OrderController.Checkout() çalışır *@
+            <form asp-action="Checkout" asp-controller="Order" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-primary"
+                        onclick="return confirm('Siparişinizi onaylamak istiyor musunuz?')">
+                    &#x2713; Siparişi Tamamla
+                </button>
+            </form>
+
+        </div>
+    }
+</div>

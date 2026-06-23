@@ -1,0 +1,103 @@
+@* =========================================================
+   Views/Admin/OrderDetail.cshtml
+   ADMİN - SİPARİŞ DETAYI
+   
+   Modeli: Order
+   Tek bir siparişin tam detaylarını gösterir.
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.Order
+
+@{
+    ViewData["Title"] = $"Sipariş #{Model.Id.ToString("D4")}";
+}
+
+<div style="max-width: 800px; margin: 0 auto; padding: 30px 20px;">
+
+    @* Geri git *@
+    <a href="@Url.Action("Orders", "Admin")" class="btn btn-outline btn-sm" style="margin-bottom: 20px;">
+        &larr; Siparişlere Dön
+    </a>
+
+    <h1 style="color: var(--color-primary-dark); margin-bottom: 6px;">
+        Sipariş #@Model.Id.ToString("D4")
+    </h1>
+    <p style="color: var(--color-text-muted); margin-bottom: 28px;">
+        @Model.OrderedAt.ToString("dd MMMM yyyy, HH:mm", new System.Globalization.CultureInfo("tr-TR"))
+    </p>
+
+    @* ===================================================
+       MÜŞTERİ BİLGİLERİ
+       =================================================== *@
+    <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">&#x1F464; Müşteri Bilgileri</div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted);">Müşteri Adı</div>
+                    <div style="font-weight: 600;">@Model.UserFullName</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted);">Kullanıcı ID</div>
+                    <div style="font-weight: 600;">#@Model.UserId</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted);">Sipariş Durumu</div>
+                    <div><span class="status-badge">@Model.Status</span></div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted);">Sipariş Tarihi</div>
+                    <div style="font-weight: 600;">@Model.OrderedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ===================================================
+       SİPARİŞ KALEMLERİ
+       =================================================== *@
+    <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">&#x1F6D2; Sipariş İçeriği</div>
+        <div class="card-body" style="padding: 0;">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Ürün</th>
+                        <th>Birim Fiyat</th>
+                        <th>Adet</th>
+                        <th>Toplam</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td><strong>@item.Name</strong></td>
+                            <td>@item.UnitPrice.ToString("N2") ₺</td>
+                            <td>@item.Quantity</td>
+                            <td><strong>@item.TotalPrice.ToString("N2") ₺</strong></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @* ===================================================
+       GENEL TOPLAM
+       =================================================== *@
+    <div style="background: white; border-radius: var(--border-radius-lg); padding: 20px; box-shadow: var(--box-shadow-md); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 1rem; color: var(--color-text-muted);">Genel Toplam</span>
+        <span style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary-dark);">
+            @Model.GrandTotal.ToString("N2") ₺
+        </span>
+    </div>
+
+    @* Siparişlere geri dön *@
+    <div style="margin-top: 24px;">
+        <a href="@Url.Action("Orders", "Admin")" class="btn btn-outline">
+            &larr; Siparişler Listesine Dön
+        </a>
+    </div>
+
+</div>

@@ -1,0 +1,72 @@
+@* =========================================================
+   Views/Account/Register.cshtml
+   KAYIT OL SAYFASI
+   
+   Modeli: RegisterViewModel
+   Yeni müşteri kaydı için form.
+   Sunucu taraflı doğrulama hataları gösterilir.
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Kayıt Ol";
+    ViewData["Description"] = "LiveLife Coffee'ye üye olun ve sipariş vermeye başlayın.";
+}
+
+<div class="form-card">
+    <h1>Kayıt Ol</h1>
+    <p class="form-subtitle">Zaten hesabınız var mı? 
+        <a href="@Url.Action("Login", "Account")">Giriş yapın</a>
+    </p>
+
+    @* Controller'dan TempData ile gelen başarı mesajı *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    @* ---- KAYIT FORMU ---- *@
+    <form asp-action="Register" asp-controller="Account" method="post">
+        
+        @* CSRF koruma token'ı *@
+        @Html.AntiForgeryToken()
+
+        @* Genel doğrulama hata özeti *@
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        @* Ad Soyad *@
+        <div class="form-group">
+            <label asp-for="FullName"></label>
+            <input asp-for="FullName" type="text" placeholder="Ad Soyad" autocomplete="name" />
+            <span asp-validation-for="FullName" class="field-validation-error"></span>
+        </div>
+
+        @* E-posta *@
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" type="email" placeholder="ornek@email.com" autocomplete="email" />
+            <span asp-validation-for="Email" class="field-validation-error"></span>
+        </div>
+
+        @* Parola *@
+        <div class="form-group">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" type="password" placeholder="En az 6 karakter" autocomplete="new-password" />
+            <span asp-validation-for="Password" class="field-validation-error"></span>
+        </div>
+
+        @* Parola Tekrar *@
+        <div class="form-group">
+            <label asp-for="ConfirmPassword"></label>
+            <input asp-for="ConfirmPassword" type="password" placeholder="Parolanızı tekrar girin" autocomplete="new-password" />
+            <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+        </div>
+
+        @* Kayıt butonu *@
+        <button type="submit" class="btn btn-primary btn-block">
+            Hesap Oluştur
+        </button>
+
+    </form>
+</div>

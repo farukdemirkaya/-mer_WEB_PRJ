@@ -1,0 +1,129 @@
+@* =========================================================
+   Views/Menu/Index.cshtml
+   MENÜ SAYFASI — YENİLENMİŞ TASARIM
+
+   Değişiklikler:
+   - Kategori başlıkları: ikon dairesi + başlık + degrade çizgi
+   - Menü kartları: daha büyük fiyat, hover efekti, emoji ikonlar
+   - Kategori bazlı emoji ikonlar (Sıcak/Soğuk/Atıştırmalık)
+
+   Model: ViewBag.GroupedItems (Dictionary<string, List<MenuItem>>)
+   ========================================================= *@
+
+@using LiveLifeCoffee.Models @* MenuItem modelini kullanmak için *@
+
+@{
+    ViewData["Title"] = "Menü";
+    ViewData["Description"] = "LiveLife Coffee menüsü — Sıcak kahveler, soğuk içecekler ve ev yapımı atıştırmalıklar. Online sipariş ver, taze içeceğini al.";
+
+    @* ViewBag'den gruplanmış ürün verisini alıyoruz
+       Dictionary<string, List<MenuItem>> tipinde; key=kategori adı *@
+    var groupedItems = ViewBag.GroupedItems as Dictionary<string, List<MenuItem>>;
+
+    @* Her kategori için gösterilecek ikonlar sözlüğü (Türkçe kategori adı → emoji) *@
+    var categoryIcons = new Dictionary<string, string>
+    {
+        { "Sıcak İçecekler",   "☕" }, // Kahve fincanı
+        { "Soğuk İçecekler",   "🧊" }, // Buz küpü
+        { "Atıştırmalıklar",   "🍰" }, // Pasta
+        { "Kahvaltılıklar",    "🍳" }, // Tava
+        { "Tatlılar",          "🍩" }, // Çörek
+    };
+}
+
+<div class="menu-page">
+    @* Sayfa başlığı *@
+    <h1>Menümüz</h1>
+    @* Altyazı *@
+    <p class="page-subtitle">
+        Özenle hazırlanmış içeceklerimizi ve ev yapımı lezzetlerimizi keşfedin.
+    </p>
+
+    @* Veri yoksa uyarı mesajı göster *@
+    @if (groupedItems == null || !groupedItems.Any())
+    {
+        <div class="alert alert-info">Menü şu an görüntülenemiyor. Lütfen daha sonra tekrar deneyin.</div>
+    }
+    else
+    {
+        @* Giriş yapılmamış kullanıcıya sipariş için giriş uyarısı *@
+        @if (!Context.Session.GetInt32("UserId").HasValue)
+        {
+            <div class="alert alert-info">
+                &#x1F6D2; Sipariş verebilmek için
+                <a href="@Url.Action("Login", "Account")"><strong>giriş yapmanız</strong></a> gerekmektedir.
+            </div>
+        }
+
+        @* TempData ile gelen başarı mesajı (sepete eklendi vb.) *@
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+        @* TempData ile gelen hata mesajı *@
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-error">@TempData["ErrorMessage"]</div>
+        }
+
+        @* Her kategori için ürün grubunu işle *@
+        @foreach (var category in groupedItems)
+        {
+            @* Kategori ikonunu belirle; tanımlı değilse varsayılan kullan *@
+            var icon = categoryIcons.ContainsKey(category.Key) ? categoryIcons[category.Key] : "🍽️";
+
+            @* Kategori başlığı *@
+            <h2 class="category-title">@category.Key</h2>
+
+            @* Bu kategorideki ürünleri ızgara düzeninde listele *@
+            <div class="menu-grid">
+
+                @* Her bir menü ürünü için kart *@
+                @foreach (var item in category.Value)
+                {
+                    @* Ürün kartı: hover efekti CSS'de tanımlı *@
+                    <div class="menu-item-card">
+
+                        @* Ürün adı *@
+                        <h3>@item.Name</h3>
+
+                        @* Ürün açıklaması: flex-grow sayesinde kartı dolduruyor *@
+                        <p>@item.Description</p>
+
+                        @* Fiyat ve buton satırı *@
+                        <div class="menu-item-footer">
+
+                            @* Fiyat etiketi: N2 formatı → 65,00 ₺ *@
+                            <span class="price-tag">@item.Price.ToString("N2") ₺</span>
+
+                            @* Ürün stoktaysa sepete ekle butonu göster *@
+                            @if (item.IsAvailable)
+                            {
+                                @* Sepete Ekle: POST isteği; OrderController.AddToCart'a gider *@
+                                <form asp-action="AddToCart" asp-controller="Order" method="post">
+                                    @Html.AntiForgeryToken() @* CSRF koruması *@
+                                    @* Ürün ID'sini hidden input ile gönder *@
+                                    <input type="hidden" name="menuItemId" value="@item.Id" />
+                                    @* Miktar: varsayılan 1 *@
+                                    <input type="hidden" name="quantity" value="1" />
+                                    @* Sepete ekle butonu *@
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        + Sepete Ekle
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                @* Stokta yok uyarısı *@
+                                <span class="out-of-stock">Stokta Yok</span>
+                            }
+
+                        </div>
+                    </div>
+                }
+
+            </div>
+        }
+    }
+
+</div>

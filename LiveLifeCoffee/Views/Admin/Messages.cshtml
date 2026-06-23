@@ -1,0 +1,128 @@
+@* =========================================================
+   Views/Admin/Messages.cshtml
+   ADMİN - İLETİŞİM MESAJLARI LİSTESİ
+   
+   Modeli: List<ContactMessage>
+   Tüm iletişim formundan gelen mesajları listeler.
+   Okunmamış mesajlar farklı renkle vurgulanır.
+   ========================================================= *@
+
+@model List<LiveLifeCoffee.Models.ContactMessage>
+
+@{
+    ViewData["Title"] = "İletişim Mesajları";
+}
+
+<div class="admin-page">
+
+    @* Sayfa başlık çubuğu *@
+    <div class="admin-header">
+        <div>
+            <h1>&#x2709; İletişim Mesajları</h1>
+            <p class="admin-welcome">Toplam @Model.Count mesaj listeleniyor.</p>
+        </div>
+        <a href="@Url.Action("Logout", "Admin")" class="btn btn-danger btn-sm">
+            &#x1F6AA; Çıkış Yap
+        </a>
+    </div>
+
+    @* Sekme navigasyonu — Aktif: Mesajlar *@
+    <nav class="admin-tabs">
+        <a href="@Url.Action("Dashboard", "Admin")" class="admin-tab-link">
+            Kontrol Paneli
+        </a>
+        <a href="@Url.Action("Orders", "Admin")" class="admin-tab-link">
+            &#x1F4CB; Siparişler
+        </a>
+        <a href="@Url.Action("Messages", "Admin")" class="admin-tab-link active">
+            &#x2709; Mesajlar
+        </a>
+        <a href="@Url.Action("Menu", "Admin")" class="admin-tab-link">
+            &#x1F4DD; Menü Yönetimi
+        </a>
+        <a href="@Url.Action("Applications", "Admin")" class="admin-tab-link">
+            Başvurular
+        </a>
+    </nav>
+
+    @* Başlık ve navigasyon *@
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h1 style="color: var(--color-primary-dark);">&#x2709; İletişim Mesajları</h1>
+            <p style="color: var(--color-text-muted);">
+                Toplam @Model.Count mesaj &middot;
+                @{
+                    int unread = Model.Count(m => !m.IsRead);
+                }
+                @if (unread > 0)
+                {
+                    @* Okunmamış mesaj sayısını kırmızı ile vurgula *@
+                    <span style="color: var(--color-error); font-weight: 600;">@unread okunmamış</span>
+                }
+                else
+                {
+                    <span>Tümü okundu</span>
+                }
+            </p>
+        </div>
+        <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-outline btn-sm">
+            &larr; Dashboard
+        </a>
+    </div>
+
+    @* Mesaj yoksa bilgi *@
+    @if (!Model.Any())
+    {
+        <div class="card">
+            <div class="card-body" style="text-align:center; padding: 60px 20px; color: var(--color-text-muted);">
+                <div style="font-size: 3rem; margin-bottom: 12px;">&#x2709;</div>
+                <p>Henüz mesaj bulunmuyor.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        @* MESAJ KARTI LİSTESİ *@
+        @foreach (var msg in Model)
+        {
+            @* Okunmamış mesajlar beyaz, okunanlar gri arka planla gösterilir *@
+            <div class="card" style="margin-bottom: 14px; border-left: 4px solid @(msg.IsRead ? "var(--color-border)" : "var(--color-primary)");">
+                <div class="card-body">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+                        
+                        @* Sol taraf: gönderen ve konu bilgisi *@
+                        <div>
+                            @* Okunmamış rozeti *@
+                            @if (!msg.IsRead)
+                            {
+                                <span style="background: var(--color-primary); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; margin-right: 8px;">YENİ</span>
+                            }
+                            <strong style="font-size: 1rem;">@msg.Subject</strong>
+                            <div style="color: var(--color-text-muted); font-size: 0.875rem; margin-top: 4px;">
+                                &#x1F464; @msg.FullName &mdash; &#x2709; @msg.Email
+                            </div>
+                        </div>
+
+                        @* Sağ taraf: tarih ve detay butonu *@
+                        <div style="text-align:right;">
+                            <div style="color: var(--color-text-muted); font-size: 0.8rem; margin-bottom: 6px;">
+                                @msg.ReceivedAt.ToString("dd.MM.yyyy HH:mm")
+                            </div>
+                            <a href="@Url.Action("MessageDetail", "Admin", new { id = msg.Id })"
+                               class="btn btn-outline btn-sm">
+                                Mesajı Oku
+                            </a>
+                        </div>
+
+                    </div>
+
+                    @* Mesajın ilk 120 karakterlik önizlemesi *@
+                    <div style="margin-top: 12px; color: var(--color-text-muted); font-size: 0.875rem; border-top: 1px solid var(--color-border); padding-top: 10px;">
+                        @(msg.Message.Length > 120 ? msg.Message.Substring(0, 120) + "..." : msg.Message)
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+</div>

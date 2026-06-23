@@ -1,0 +1,144 @@
+@* =========================================================
+   Views/Admin/Applications.cshtml
+   BAŞVURULAR LİSTESİ — ADMİN PANELİ
+
+   Model: List<JobApplication>
+   Tüm iş başvurularını tablo halinde listeler.
+   Okunmamış başvurular "Yeni" rozetiyle işaretlenir.
+   ========================================================= *@
+
+@model List<LiveLifeCoffee.Models.JobApplication>
+
+@{
+    ViewData["Title"] = "İş Başvuruları"; @* Sekme başlığı *@
+}
+
+<div class="admin-page">
+
+    @* ===================================================
+       BAŞLIK ÇUBUĞU
+       =================================================== *@
+    <div class="admin-header">
+        <div>
+            @* Sayfa başlığı *@
+            <h1>İş Başvuruları</h1>
+            @* Toplam kayıt sayısı *@
+            <p class="admin-welcome">Toplam @Model.Count başvuru listeleniyor.</p>
+        </div>
+        @* Güvenli çıkış butonu *@
+        <a href="@Url.Action("Logout", "Admin")" class="btn btn-danger btn-sm">
+            &#x1F6AA; Çıkış Yap
+        </a>
+    </div>
+
+    @* ===================================================
+       SEKME NAVİGASYONU
+       Aktif sekme: "Başvurular"
+       =================================================== *@
+    <nav class="admin-tabs">
+        @* Kontrol Paneli sekmesi *@
+        <a href="@Url.Action("Dashboard", "Admin")" class="admin-tab-link">
+            Kontrol Paneli
+        </a>
+        @* Siparişler sekmesi *@
+        <a href="@Url.Action("Orders", "Admin")" class="admin-tab-link">
+            &#x1F4CB; Siparişler
+        </a>
+        @* Mesajlar sekmesi *@
+        <a href="@Url.Action("Messages", "Admin")" class="admin-tab-link">
+            &#x2709; Mesajlar
+        </a>
+        @* Menü Yönetimi sekmesi *@
+        <a href="@Url.Action("Menu", "Admin")" class="admin-tab-link">
+            &#x1F4DD; Menü Yönetimi
+        </a>
+        @* Başvurular sekmesi: Bu sayfada aktif *@
+        <a href="@Url.Action("Applications", "Admin")" class="admin-tab-link active">
+            Başvurular
+        </a>
+    </nav>
+
+    @* ===================================================
+       BAŞVURULAR TABLOSU
+       =================================================== *@
+    <div class="card">
+        <div class="card-header">Tüm İş Başvuruları</div>
+        <div class="card-body" style="padding: 0;">
+
+            @if (!Model.Any())
+            {
+                @* Hiç başvuru yoksa bilgi mesajı *@
+                <p style="padding: 30px; text-align:center; color: var(--color-text-muted);">
+                    Henüz hiç iş başvurusu bulunmuyor.
+                </p>
+            }
+            else
+            {
+                @* Başvurular tablosu *@
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>              @* Başvuru numarası *@
+                            <th>Ad Soyad</th>       @* Başvuru sahibinin adı *@
+                            <th>Pozisyon</th>       @* Başvurulan pozisyon *@
+                            <th>E-posta</th>        @* İletişim e-postası *@
+                            <th>Tarih</th>          @* Başvuru tarihi *@
+                            <th>Durum</th>          @* Okundu/Yeni rozeti *@
+                            <th></th>               @* Detay butonu *@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* Her başvuru için bir tablo satırı *@
+                        @foreach (var app in Model)
+                        {
+                            @* Okunmamış başvurular için satır arka planını değiştir *@
+                            <tr style="@(!app.IsRead ? "background-color: var(--color-very-light-green);" : "")">
+                                @* Başvuru ID: 4 haneli formatta *@
+                                <td><strong>#@app.Id.ToString("D4")</strong></td>
+                                @* Başvuranın adı *@
+                                <td>@app.FullName</td>
+                                @* Başvurulan pozisyon *@
+                                <td>@app.Position</td>
+                                @* E-posta adresi: küçük metin *@
+                                <td style="font-size: 0.875rem; color: var(--color-text-muted);">@app.Email</td>
+                                @* Tarih: gün.ay.yıl formatı *@
+                                <td>@app.AppliedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                @* Okundu/Yeni durumu rozeti *@
+                                <td>
+                                    @if (!app.IsRead)
+                                    {
+                                        @* Okunmamış: kırmızı "Yeni" rozeti *@
+                                        <span style="background: var(--color-error); color: white; border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; font-weight: 700;">
+                                            Yeni
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        @* Okunmuş: gri "Görüldü" rozeti *@
+                                        <span class="status-badge">Görüldü</span>
+                                    }
+                                </td>
+                                @* Detay sayfasına yönlendirme butonu *@
+                                <td>
+                                    <a href="@Url.Action("ApplicationDetail", "Admin", new { id = app.Id })"
+                                       class="btn btn-outline btn-sm">
+                                        İncele
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+        </div>
+    </div>
+
+    @* Kontrol paneline geri dön linki *@
+    <div style="text-align: left; margin-top: 16px;">
+        <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-outline btn-sm">
+            &larr; Kontrol Paneline Dön
+        </a>
+    </div>
+
+</div>

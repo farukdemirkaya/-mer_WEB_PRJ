@@ -1,0 +1,142 @@
+@* =========================================================
+   Views/Admin/Orders.cshtml
+   ADMİN - TÜM SİPARİŞLER LİSTESİ
+   
+   Modeli: List<Order>
+   Sistemdeki tüm kullanıcıların siparişleri listelenir.
+   Her siparişe tıklanarak detay görüntülenebilir.
+   ========================================================= *@
+
+@model List<LiveLifeCoffee.Models.Order>
+
+@{
+    ViewData["Title"] = "Tüm Siparişler"; @* Sekme başlığı Türkçe *@
+}
+
+<div class="admin-page">
+
+    @* ===================================================
+       BAŞLIK ÇUBUĞU
+       =================================================== *@
+    <div class="admin-header">
+        <div>
+            @* Sayfa başlığı *@
+            <h1>&#x1F4CB; Tüm Siparişler</h1>
+            @* Toplam sipariş sayısı *@
+            <p class="admin-welcome">Toplam @Model.Count sipariş listeleniyor.</p>
+        </div>
+        @* Güvenli çıkış butonu *@
+        <a href="@Url.Action("Logout", "Admin")" class="btn btn-danger btn-sm">
+            &#x1F6AA; Çıkış Yap
+        </a>
+    </div>
+
+    @* ===================================================
+       SEKME NAVİGASYONU — Aktif: Siparişler
+       =================================================== *@
+    <nav class="admin-tabs">
+        @* Kontrol Paneli sekmesi *@
+        <a href="@Url.Action("Dashboard", "Admin")" class="admin-tab-link">
+            Kontrol Paneli
+        </a>
+        @* Siparişler sekmesi: aktif *@
+        <a href="@Url.Action("Orders", "Admin")" class="admin-tab-link active">
+            &#x1F4CB; Siparişler
+        </a>
+        @* Mesajlar sekmesi *@
+        <a href="@Url.Action("Messages", "Admin")" class="admin-tab-link">
+            &#x2709; Mesajlar
+        </a>
+        @* Menü Yönetimi sekmesi *@
+        <a href="@Url.Action("Menu", "Admin")" class="admin-tab-link">
+            &#x1F4DD; Menü Yönetimi
+        </a>
+        @* Başvurular sekmesi *@
+        <a href="@Url.Action("Applications", "Admin")" class="admin-tab-link">
+            Başvurular
+        </a>
+    </nav>
+
+    @* Başarı/hata mesajları *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    @* Sipariş yoksa bilgi mesajı *@
+    @if (!Model.Any())
+    {
+        <div class="card">
+            <div class="card-body" style="text-align:center; padding: 60px 20px; color: var(--color-text-muted);">
+                <div style="font-size: 3rem; margin-bottom: 12px;">&#x1F4CB;</div>
+                <p>Henüz sipariş bulunmuyor.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        @* SİPARİŞLER TABLOSU *@
+        <div class="card">
+            <div class="card-body" style="padding: 0;">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Sipariş #</th>
+                            <th>Müşteri</th>
+                            <th>Ürün Sayısı</th>
+                            <th>Toplam Tutar</th>
+                            <th>Durum</th>
+                            <th>Tarih &amp; Saat</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                @* 4 haneli sipariş numarası *@
+                                <td><strong>#@order.Id.ToString("D4")</strong></td>
+
+                                <td>@order.UserFullName</td>
+
+                                @* Toplam adet sayısı: tüm kalemlerin Quantity değerlerinin toplamı *@
+                                <td>@order.Items.Sum(i => i.Quantity) adet</td>
+
+                                <td><strong>@order.GrandTotal.ToString("N2") ₺</strong></td>
+
+                                <td><span class="status-badge">@order.Status</span></td>
+
+                                @* Tarih formatı: "20.06.2026 14:35" *@
+                                <td style="font-size: 0.875rem;">@order.OrderedAt.ToString("dd.MM.yyyy HH:mm")</td>
+
+                                <td>
+                                    @* Detay sayfasına git *@
+                                    <a href="@Url.Action("OrderDetail", "Admin", new { id = order.Id })"
+                                       class="btn btn-outline btn-sm">
+                                        Detay
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @* Alt bilgi: toplam ciro *@
+        <div style="text-align: right; margin-top: 16px; padding: 16px; background: white; border-radius: var(--border-radius); box-shadow: var(--box-shadow);">
+            <span style="color: var(--color-text-muted);">Toplam Ciro: </span>
+            <strong style="font-size: 1.2rem; color: var(--color-primary-dark);">
+                @Model.Sum(o => o.GrandTotal).ToString("N2") ₺
+            </strong>
+        </div>
+    }
+
+    @* Kontrol paneline geri dön linki *@
+    <div style="text-align: left; margin-top: 16px;">
+        <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-outline btn-sm">
+            &larr; Kontrol Paneline Dön
+        </a>
+    </div>
+
+</div>

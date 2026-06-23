@@ -1,0 +1,63 @@
+@* =========================================================
+   Views/Account/Login.cshtml
+   GİRİŞ YAP SAYFASI
+   
+   Modeli: LoginViewModel
+   E-posta ve parola ile kullanıcı doğrulama formu.
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+    ViewData["Description"] = "LiveLife Coffee hesabınıza giriş yapın.";
+}
+
+<div class="form-card">
+    <h1>Giriş Yap</h1>
+    <p class="form-subtitle">Hesabınız yok mu? 
+        <a href="@Url.Action("Register", "Account")">Kayıt olun</a>
+    </p>
+
+    @* Controller'dan TempData ile gelen başarı mesajı (kayıt sonrası) *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    @* Controller'dan model üzerinden gelen hata mesajı (yanlış şifre vb.) *@
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-error">@Model.ErrorMessage</div>
+    }
+
+    @* ---- GİRİŞ FORMU ---- *@
+    <form asp-action="Login" asp-controller="Account" method="post">
+        
+        @* CSRF koruma token'ı *@
+        @Html.AntiForgeryToken()
+
+        @* Genel model doğrulama hatası özeti *@
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        @* E-posta alanı *@
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" type="email" placeholder="ornek@email.com" autocomplete="email" />
+            <span asp-validation-for="Email" class="field-validation-error"></span>
+        </div>
+
+        @* Parola alanı *@
+        <div class="form-group">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" type="password" placeholder="Parolanız" autocomplete="current-password" />
+            <span asp-validation-for="Password" class="field-validation-error"></span>
+        </div>
+
+        @* Giriş butonu *@
+        <button type="submit" class="btn btn-primary btn-block">
+            Giriş Yap
+        </button>
+
+    </form>
+</div>

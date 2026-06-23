@@ -1,0 +1,252 @@
+@* =========================================================
+   Views/Admin/Dashboard.cshtml
+   KONTROL PANELİ — YENİLENMİŞ TASARIM
+
+   Değişiklikler:
+   - "Admin Dashboard" → "Kontrol Paneli"
+   - Üst sekme navigasyonu eklendi (5 sekme)
+   - İstatistik kartları: renkli sol şerit, hover efekti
+   - İş başvurusu istatistiği eklendi
+   - Hızlı erişim butonları yeniden tasarlandı
+   - Son siparişler tablosu korundu
+   ========================================================= *@
+
+@{
+    ViewData["Title"] = "Kontrol Paneli"; @* Sekme başlığı Türkçe *@
+}
+
+<div class="admin-page">
+
+    @* ===================================================
+       BAŞLIK ÇUBUĞU: Sol taraf başlık, sağ taraf çıkış
+       =================================================== *@
+    <div class="admin-header">
+        <div>
+            @* Kontrol paneli başlığı *@
+            <h1>Kontrol Paneli</h1>
+            @* Hoş geldiniz altyazısı *@
+            <p class="admin-welcome">Hoş geldiniz! Güncel durum özeti aşağıda.</p>
+        </div>
+        @* Güvenli çıkış butonu *@
+        <a href="@Url.Action("Logout", "Admin")" class="btn btn-danger btn-sm">
+            &#x1F6AA; Çıkış Yap
+        </a>
+    </div>
+
+    @* ===================================================
+       SEKME NAVİGASYONU
+       Tüm admin sayfalarına hızlı geçiş sağlar.
+       Aktif sekme: "Kontrol Paneli"
+       =================================================== *@
+    <nav class="admin-tabs">
+        @* Kontrol Paneli sekmesi: Bu sayfada aktif *@
+        <a href="@Url.Action("Dashboard", "Admin")" class="admin-tab-link active">
+            Kontrol Paneli
+        </a>
+        @* Siparişler sekmesi *@
+        <a href="@Url.Action("Orders", "Admin")" class="admin-tab-link">
+            &#x1F4CB; Siparişler
+        </a>
+        @* Mesajlar sekmesi: okunmamış rozeti göster *@
+        <a href="@Url.Action("Messages", "Admin")" class="admin-tab-link">
+            &#x2709; Mesajlar
+            @if (ViewBag.UnreadMessages > 0)
+            {
+                @* Kırmızı rozet: okunmamış mesaj sayısı *@
+                <span class="tab-badge">@ViewBag.UnreadMessages</span>
+            }
+        </a>
+        @* Menü Yönetimi sekmesi *@
+        <a href="@Url.Action("Menu", "Admin")" class="admin-tab-link">
+            &#x1F4DD; Menü Yönetimi
+        </a>
+        @* Başvurular sekmesi: okunmamış rozeti göster *@
+        <a href="@Url.Action("Applications", "Admin")" class="admin-tab-link">
+            Başvurular
+            @if (ViewBag.UnreadApplications > 0)
+            {
+                @* Kırmızı rozet: okunmamış başvuru sayısı *@
+                <span class="tab-badge">@ViewBag.UnreadApplications</span>
+            }
+        </a>
+    </nav>
+
+    @* ===================================================
+       İSTATİSTİK KARTLARI
+       5 kart: Siparişler, Ciro, Menü, Mesajlar, Başvurular
+       =================================================== *@
+    <div class="admin-stats-grid">
+
+        @* Kart 1: Toplam Sipariş (mavi şeritli) *@
+        <div class="stat-card orders">
+            <span class="stat-icon">&#x1F4CB;</span> @* Pano ikonu *@
+            <div class="stat-number">@ViewBag.TotalOrders</div>
+            <div class="stat-label">Toplam Sipariş</div>
+        </div>
+
+        @* Kart 2: Toplam Ciro (yeşil şeritli) *@
+        <div class="stat-card revenue">
+            <span class="stat-icon">&#x1F4B0;</span> @* Para çantası *@
+            <div class="stat-number" style="font-size:1.6rem;">
+                @(((decimal)ViewBag.TotalRevenue).ToString("N0")) ₺
+            </div>
+            <div class="stat-label">Toplam Ciro</div>
+        </div>
+
+        @* Kart 3: Menü Ürün Sayısı (amber şeritli) *@
+        <div class="stat-card menu">
+            <span class="stat-icon">&#x2615;</span> @* Kahve fincanı *@
+            <div class="stat-number">@ViewBag.TotalMenuItems</div>
+            <div class="stat-label">Menü Ürünü</div>
+        </div>
+
+        @* Kart 4: Okunmamış Mesaj (mor şeritli) *@
+        <div class="stat-card messages">
+            <span class="stat-icon">&#x2709;</span> @* Zarf ikonu *@
+            @* Okunmamış mesaj varsa kırmızı renk *@
+            <div class="stat-number" style="color: @(ViewBag.UnreadMessages > 0 ? "var(--color-error)" : "var(--color-primary-dark)");">
+                @ViewBag.UnreadMessages
+            </div>
+            <div class="stat-label">Okunmamış Mesaj</div>
+        </div>
+
+        @* Kart 5: Okunmamış Başvuru (pembe şeritli) — YENİ *@
+        <div class="stat-card apps">
+            <span class="stat-icon">&#x1F4BC;</span> @* Evrak çantası *@
+            @* Okunmamış başvuru varsa kırmızı renk *@
+            <div class="stat-number" style="color: @(ViewBag.UnreadApplications > 0 ? "var(--color-error)" : "var(--color-primary-dark)");">
+                @ViewBag.UnreadApplications
+            </div>
+            <div class="stat-label">Yeni Başvuru</div>
+        </div>
+
+    </div>
+
+    @* ===================================================
+       HIZLI ERİŞİM BUTONLARI
+       Sık kullanılan admin sayfalarına tek tıkla ulaşım.
+       =================================================== *@
+    <div class="admin-quick-actions">
+
+        @* Tüm siparişler butonu *@
+        <a href="@Url.Action("Orders", "Admin")" class="quick-action-btn">
+            <span class="qa-icon">&#x1F4CB;</span>
+            <span>Tüm Siparişler</span>
+        </a>
+
+        @* Mesajlar butonu *@
+        <a href="@Url.Action("Messages", "Admin")" class="quick-action-btn">
+            <span class="qa-icon">&#x2709;</span>
+            <span>
+                Mesajlar
+                @if (ViewBag.UnreadMessages > 0)
+                {
+                    @* Küçük okunmamış sayısı *@
+                    <span style="font-size: 0.75rem; color: var(--color-error);">(@ViewBag.UnreadMessages yeni)</span>
+                }
+            </span>
+        </a>
+
+        @* Menü Yönetimi butonu *@
+        <a href="@Url.Action("Menu", "Admin")" class="quick-action-btn">
+            <span class="qa-icon">&#x1F4DD;</span>
+            <span>Menü Yönetimi</span>
+        </a>
+
+        @* Yeni Ürün Ekle butonu *@
+        <a href="@Url.Action("AddMenuItem", "Admin")" class="quick-action-btn">
+            <span class="qa-icon">&#x2795;</span>
+            <span>Yeni Ürün Ekle</span>
+        </a>
+
+        @* Başvurular butonu (YENİ) *@
+        <a href="@Url.Action("Applications", "Admin")" class="quick-action-btn">
+            <span class="qa-icon">&#x1F4BC;</span>
+            <span>
+                Başvurular
+                @if (ViewBag.UnreadApplications > 0)
+                {
+                    @* Küçük okunmamış sayısı *@
+                    <span style="font-size: 0.75rem; color: var(--color-error);">(@ViewBag.UnreadApplications yeni)</span>
+                }
+            </span>
+        </a>
+
+    </div>
+
+    @* ===================================================
+       SON 5 SİPARİŞ TABLOSU
+       Kontrol panelinde son siparişlerin özetini gösterir.
+       =================================================== *@
+    <div class="card">
+        <div class="card-header">&#x1F550; Son Siparişler</div>
+        <div class="card-body" style="padding: 0;">
+
+            @{
+                @* ViewBag'den son siparişleri List<Order> tipine dönüştür *@
+                var recentOrders = ViewBag.RecentOrders as List<LiveLifeCoffee.Models.Order>;
+            }
+
+            @if (recentOrders == null || !recentOrders.Any())
+            {
+                @* Sipariş yoksa bilgi mesajı *@
+                <p style="padding: 24px; color: var(--color-text-muted); text-align:center;">
+                    Henüz sipariş bulunmuyor.
+                </p>
+            }
+            else
+            {
+                @* Siparişler tablosu *@
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>                @* Sipariş numarası *@
+                            <th>Müşteri</th>          @* Müşteri adı *@
+                            <th>Ürün Sayısı</th>      @* Siparişteki toplam ürün *@
+                            <th>Tutar</th>            @* Sipariş tutarı *@
+                            <th>Durum</th>            @* Sipariş durumu *@
+                            <th>Tarih</th>            @* Sipariş tarihi *@
+                            <th></th>                 @* Detay butonu sütunu *@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* Her sipariş için bir satır *@
+                        @foreach (var order in recentOrders)
+                        {
+                            <tr>
+                                @* Sipariş ID: 4 haneli, başında sıfırla (#0001 formatı) *@
+                                <td><strong>#@order.Id.ToString("D4")</strong></td>
+                                @* Müşteri adı *@
+                                <td>@order.UserFullName</td>
+                                @* Toplam ürün miktarı: tüm kalemlerin miktarları toplanır *@
+                                <td>@order.Items.Sum(i => i.Quantity) ürün</td>
+                                @* Toplam tutar: N2 formatı → 125,00 ₺ *@
+                                <td>@order.GrandTotal.ToString("N2") ₺</td>
+                                @* Durum rozeti *@
+                                <td><span class="status-badge">@order.Status</span></td>
+                                @* Tarih: gün.ay.yıl saat:dakika formatı *@
+                                <td>@order.OrderedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                @* Sipariş detay linki *@
+                                <td>
+                                    <a href="@Url.Action("OrderDetail", "Admin", new { id = order.Id })"
+                                       class="btn btn-outline btn-sm">
+                                        Detay
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+        </div>
+    </div>
+
+    @* Tüm siparişleri gör linki *@
+    <div style="text-align: right; margin-top: 12px;">
+        <a href="@Url.Action("Orders", "Admin")" class="btn btn-outline btn-sm">
+            Tüm Siparişleri Gör &rarr;
+        </a>
+    </div>
+
+</div>

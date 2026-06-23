@@ -1,0 +1,157 @@
+@* =========================================================
+   Views/Shared/_Layout.cshtml
+   Tüm sayfaların ortak iskeletidir.
+   @RenderBody() → Sayfanın kendine özgü içeriği buraya eklenir.
+   
+   Güncellemeler:
+   - İş Başvurusu linki menüye ve footer'a eklendi
+   - Admin sekme navigasyonu için aktif sayfa tespiti eklendi
+   - Footer'a imza: "Yapan: Ömer Faruk Demirkaya — 2026"
+   ========================================================= *@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    @* Mobil uyum için viewport meta etiketi *@
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    @* SEO: Her sayfada @ViewData["Title"] ile değişen başlık *@
+    <title>@ViewData["Title"] - LiveLife Coffee</title>
+    
+    @* SEO: Meta açıklama *@
+    <meta name="description" content="@(ViewData["Description"] ?? "LiveLife Coffee - Kahvenin en taze hali ile buluşuyoruz.")" />
+
+    @* Google Fonts: Inter — daha modern ve okunabilir bir tipografi *@
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    @* Ana CSS dosyasını bağla; asp-append-version: cache buster ekler *@
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    @* ===================================================
+       NAVIGASYON ÇUBUĞU
+       Session kontrolü: giriş durumuna göre farklı linkler
+       =================================================== *@
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-inner">
+                
+                @* Kafenin logosu — ana sayfaya link *@
+                <a href="@Url.Action("Index", "Home")" class="navbar-brand">&#x2615; LiveLife Coffee</a>
+
+                @* Navigasyon linkleri listesi *@
+                <ul class="navbar-nav">
+                    @* Ana Sayfa linki *@
+                    <li>
+                        <a href="@Url.Action("Index", "Home")">Ana Sayfa</a>
+                    </li>
+                    
+                    @* Menü sayfası linki *@
+                    <li>
+                        <a href="@Url.Action("Index", "Menu")">Menü</a>
+                    </li>
+                    
+                    @* Sepet: yalnızca giriş yapılmışsa göster *@
+                    @if (Context.Session.GetInt32("UserId").HasValue)
+                    {
+                        <li>
+                            <a href="@Url.Action("Cart", "Order")">Sepet</a>
+                        </li>
+                    }
+                    
+                    @* İletişim sayfası linki *@
+                    <li>
+                        <a href="@Url.Action("Contact", "Home")">İletişim</a>
+                    </li>
+
+                    @* İş Başvurusu: herkese görünür (YENİ) *@
+                    <li>
+                        <a href="@Url.Action("JobApplication", "Home")" 
+                           style="color: #86efac;">İş Başvurusu</a>
+                    </li>
+
+                    @* Kullanıcı giriş yapmışsa: hoş geldin + çıkış *@
+                    @if (Context.Session.GetInt32("UserId").HasValue)
+                    {
+                        <li>
+                            <span class="navbar-user">
+                                @Context.Session.GetString("UserFullName")
+                            </span>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Logout", "Account")" class="btn-logout">Çıkış</a>
+                        </li>
+                    }
+                    else
+                    {
+                        @* Giriş yapılmamışsa kayıt ve giriş linkleri *@
+                        <li>
+                            <a href="@Url.Action("Register", "Account")">Kayıt Ol</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Login", "Account")">Giriş Yap</a>
+                        </li>
+                    }
+
+                    @* Admin oturum kontrolü: IsAdmin = "true" varsa Admin Panel linki göster *@
+                    @if (Context.Session.GetString("IsAdmin") == "true")
+                    {
+                        <li>
+                            <a href="@Url.Action("Dashboard", "Admin")" 
+                               style="background-color: rgba(180,83,9,0.3); color: #fed7aa;">
+                                Kontrol Paneli
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    @* ===================================================
+       ANA İÇERİK: Her sayfanın View'ı buraya render edilir
+       =================================================== *@
+    <main>
+        @RenderBody()
+    </main>
+
+    @* ===================================================
+       FOOTER
+       Sitenin alt bilgisi: linkler, telif ve imza satırı.
+       =================================================== *@
+    <footer class="footer">
+        <div class="container">
+            @* Telif hakkı satırı *@
+            <p>&copy; @DateTime.Now.Year LiveLife Coffee. Tüm hakları saklıdır.</p>
+
+            @* Alt bağlantılar *@
+            <p style="margin-top:8px;">
+                <a href="@Url.Action("Contact", "Home")">&#x0130;letişim</a> &middot; 
+                <a href="@Url.Action("Index", "Menu")">Menü</a> &middot;
+                <a href="@Url.Action("JobApplication", "Home")">İş Başvurusu</a> &middot;
+                @* Admin giriş linki: küçük ve soluk görünüm *@
+                <a href="@Url.Action("Login", "Admin")" style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">
+                    Yönetici
+                </a>
+            </p>
+
+            @* =============================================
+               İMZA SATIRI
+               Projeyi yapan kişinin adı ve yılı.
+               ============================================= *@
+            <p class="footer-signature">
+                <strong>Yapan: Ömer Faruk Demirkaya</strong> &mdash; 2026
+            </p>
+        </div>
+    </footer>
+
+    @* Sayfa bazlı JavaScript bölümü (isteğe bağlı) *@
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

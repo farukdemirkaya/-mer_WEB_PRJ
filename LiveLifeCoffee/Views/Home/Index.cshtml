@@ -1,0 +1,248 @@
+@* =========================================================
+   Views/Home/Index.cshtml
+   ANA SAYFA — YENİLENMİŞ TASARIM
+
+   Bölümler (yukarıdan aşağıya):
+   1. Hero: Büyük başlık ve karşılama
+   2. Özellikler: 3 kart (kahve, taze malzeme, kolay sipariş)
+   3. Hakkımızda: Sıcak dille kafe hikayesi
+   4. Müşteri Yorumları: 3 yorum kartı
+   5. Çağrı Bölümü: Menüye ve iş başvurusuna yönlendirme
+
+   Giriş gerektirmez; herkese açıktır.
+   ========================================================= *@
+
+@{
+    @* Bu View'ın başlığı; _Layout'taki <title> etiketine yansır *@
+    ViewData["Title"] = "Ana Sayfa";
+    ViewData["Description"] = "LiveLife Coffee — Yenişehir'de, her sabah sizi bekleyen sıcak bir yuva. En lezzetli kahveler ve ev yapımı atıştırmalıklar.";
+}
+
+@* ===================================================
+   BÖLÜM 1 — HERO
+   Sayfanın en üstündeki büyük karşılama alanı.
+   Arka plan: dikey yeşil degrade.
+   =================================================== *@
+<section class="hero">
+    @* Ana başlık: kısa, akılda kalıcı *@
+    <h1>Merhaba, biz LiveLife Coffee! &#x2615;</h1>
+
+    @* Alt metin: sıcak, samimi kafe dili *@
+    <p>
+        Her sabah taze çekilen kahvemizle, Yenişehir'in en güzel köşesinde sizi bekliyoruz.
+        Uğrayın, bir fincan için bile olsa — hep hoş sohbet, hep sıcak bir gülümseme.
+    </p>
+
+    @* Kullanıcı giriş yapmışsa doğrudan menüye yönlendir; yoksa kayıt sayfasına *@
+    @if (Context.Session.GetInt32("UserId").HasValue)
+    {
+        <a href="@Url.Action("Index", "Menu")" class="btn btn-outline"
+           style="border-color:white; color:white; margin-right: 12px;">
+            Menüyü Keşfet
+        </a>
+    }
+    else
+    {
+        @* Kayıt ol butonu: üye olmayan kullanıcı için *@
+        <a href="@Url.Action("Register", "Account")" class="btn btn-outline"
+           style="border-color:white; color:white; margin-right: 12px;">
+            Hemen Üye Ol
+        </a>
+    }
+    @* Menüye her zaman görünen ikinci buton *@
+    <a href="@Url.Action("Index", "Menu")" class="btn btn-outline"
+       style="border-color:rgba(255,255,255,0.5); color:rgba(255,255,255,0.85);">
+        Menüye Bak &#x2192;
+    </a>
+</section>
+
+@* ===================================================
+   BÖLÜM 2 — ÖZELLİKLER
+   3 sütunlu özellik/avantaj kartları.
+   Her kart bir emoji ikon ve kısa açıklama içerir.
+   =================================================== *@
+<section class="features">
+    
+    @* Özellik 1: Özenle Seçilmiş Kahveler *@
+    <div class="feature-card">
+        <div class="icon">&#x2615;</div> @* Kahve fincanı *@
+        <h3>Özenle Seçilmiş Kahveler</h3>
+        <p>
+            Etiyopya, Kolombiya, Guatemala... Her sabah farklı bir hikaye.
+            Bizim için kahve sadece içecek değil, bir ritüel.
+        </p>
+    </div>
+
+    @* Özellik 2: Taze ve Doğal *@
+    <div class="feature-card">
+        <div class="icon">&#x1F33F;</div> @* Bitki yaprağı *@
+        <h3>Taze ve Doğal, Hep Böyle</h3>
+        <p>
+            Malzemeleri seçerken tek kriterimiz: "Bunu biz de yiyor muyuz?"
+            Cevap evet ise rafamıza giriyor.
+        </p>
+    </div>
+
+    @* Özellik 3: Online Sipariş *@
+    <div class="feature-card">
+        <div class="icon">&#x1F4E6;</div> @* Paket *@
+        <h3>Sipariş Ver, Gel Al</h3>
+        <p>
+            Üye ol, menüden seç, sepete ekle ve siparişini ver.
+            Geldiğinde sıcacık hazır olsun!
+        </p>
+    </div>
+
+</section>
+
+@* ===================================================
+   BÖLÜM 3 — HAKKIMIZDA
+   Koyu yeşil arka plan; kafe sahibinin sesinden hikaye.
+   Yapay, robotik dil yerine samimi, insancıl bir anlatım.
+   =================================================== *@
+<section class="about-section">
+    <div class="about-inner">
+
+        @* Küçük etiket: bölüm kimliği *@
+        <span class="section-tag">Biz Kimiz?</span>
+
+        @* Bölüm başlığı *@
+        <h2>2019'dan beri aynı tutkuyla</h2>
+
+        @* Birinci paragraf: başlangıç hikayesi *@
+        <p>
+            LiveLife Coffee, Yenişehir'in arka sokaklarından birine sıkıştırdığımız küçük bir
+            dükkândan doğdu. Başlangıçta sadece 4 masaydı, bir espresso makinesi ve kendi
+            kahvemizi yapmak için yanıp tutuşan iki arkadaş. Şimdi daha büyüğüz ama ruhumuz
+            hâlâ aynı: iyi kahve, dürüst malzeme, sıcak yüz.
+        </p>
+
+        @* İkinci paragraf: felsefe *@
+        <p>
+            Menümüz hiçbir zaman "çok kalabalık" olmadı; çünkü az şeyi çok iyi yapmayı
+            tercih ediyoruz. Her kahve çekirdeği seçilir, her kek kendi elimizde yapılır.
+            Müşterilerimizin adını biliyoruz, alışkanlıklarını biliyoruz — bu bizim için
+            gurur meselesi.
+        </p>
+
+        @* İş başvurusu çağrısı — samimi tonla *@
+        <p style="margin-bottom: 0;">
+            Ekibimize katılmak ister misin?
+            <a href="@Url.Action("JobApplication", "Home")" 
+               style="color: #86efac; font-weight: 600; text-decoration: underline;">
+                İş başvurusu formunu doldur &#x2192;
+            </a>
+        </p>
+
+    </div>
+</section>
+
+@* ===================================================
+   BÖLÜM 4 — MÜŞTERİ YORUMLARI
+   3 yorum kartı; her kartın üstünde büyük tırnak,
+   altta yorum yapanın adı ve avatarı.
+   =================================================== *@
+<section class="reviews-section">
+
+    @* Bölüm başlığı *@
+    <div class="section-header">
+        <h2 class="section-title">Müşterilerimiz Anlatıyor</h2>
+        <p class="section-subtitle">
+            Binlerce fincan kahveden sonra artık müşterilerimiz bizi en iyi anlatan kişiler.
+        </p>
+    </div>
+
+    @* 3 yorum kartı ızgarası *@
+    <div class="reviews-grid">
+
+        @* Yorum 1 *@
+        <div class="review-card">
+            @* Yıldız değerlendirme *@
+            <div class="review-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div>
+            @* Yorum metni: samimi ve gerçekçi *@
+            <p class="review-text">
+                Sabah işe gitmeden önce buradan geçmek artık bir alışkanlık olmaktan çıktı,
+                adeta zorunluluk oldu. Latte'si gerçekten eşsiz. Baristalar da müşterilerle
+                şakalaşıp gün başlatıyor insanı.
+            </p>
+            @* Yorum yapan kişi bilgisi *@
+            <div class="review-author">
+                <div class="review-avatar">A</div> @* İsmin ilk harfi *@
+                <div>
+                    <div class="review-name">Ayşe K.</div>
+                    <div class="review-meta">Yenişehir, düzenli müşteri</div>
+                </div>
+            </div>
+        </div>
+
+        @* Yorum 2 *@
+        <div class="review-card">
+            @* Yıldız değerlendirme *@
+            <div class="review-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div>
+            @* Yorum metni *@
+            <p class="review-text">
+                San Sebastian Cheesecake'i ilk denediğimde annem zannetim evde yapılmış diye.
+                Kafede yapılmış olmak için çok "ev gibi" bir lezzet. Brownie ile birlikte
+                sipariş veriyorum her zaman, ikisini bir anda yiyemiyorum ama!
+            </p>
+            @* Yorum yapan kişi bilgisi *@
+            <div class="review-author">
+                <div class="review-avatar">M</div>
+                <div>
+                    <div class="review-name">Mehmet A.</div>
+                    <div class="review-meta">Yenişehir, foodie</div>
+                </div>
+            </div>
+        </div>
+
+        @* Yorum 3 *@
+        <div class="review-card">
+            @* Yıldız değerlendirme *@
+            <div class="review-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div>
+            @* Yorum metni *@
+            <p class="review-text">
+                Cold brew'larının kimseye benzemediğini söylüyorum her fırsatta.
+                12 saat demleniyor ve farkı dudaklarına değdiği an hissediyorsun.
+                Artık başka yerin cold brew'unu içemiyorum — bana bunu yaptıklarına
+                ayrıca teşekkür ederim!
+            </p>
+            @* Yorum yapan kişi bilgisi *@
+            <div class="review-author">
+                <div class="review-avatar">Z</div>
+                <div>
+                    <div class="review-name">Zeynep T.</div>
+                    <div class="review-meta">Yenişehir, yeni keşif</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@* ===================================================
+   BÖLÜM 5 — ÇAĞRI BÖLÜMİ (CTA)
+   Menüye yönlendirme + iş başvurusu linki.
+   =================================================== *@
+<section style="background-color: var(--color-light-green); padding: 60px 20px; text-align: center;">
+
+    @* Başlık *@
+    <h2 style="color: var(--color-primary-dark); font-size: 1.7rem; margin-bottom: 14px; font-weight: 700;">
+        Bugün ne içmek istiyorsun?
+    </h2>
+
+    @* Alt metin *@
+    <p style="color: var(--color-text-muted); margin-bottom: 30px; max-width: 460px; margin-left: auto; margin-right: auto;">
+        Menümüzü incele, favorini seç, sipariş ver. Basit, hızlı, lezzetli.
+    </p>
+
+    @* Menüye git butonu *@
+    <a href="@Url.Action("Index", "Menu")" class="btn btn-primary" style="margin-right: 14px;">
+        Menüyü Gör
+    </a>
+
+    @* İş başvurusu butonu: ikincil renk *@
+    <a href="@Url.Action("JobApplication", "Home")" class="btn btn-outline">
+        Ekibimize Katıl
+    </a>
+
+</section>

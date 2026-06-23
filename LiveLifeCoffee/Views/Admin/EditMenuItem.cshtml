@@ -1,0 +1,94 @@
+@* =========================================================
+   Views/Admin/EditMenuItem.cshtml
+   ADMİN - ÜRÜN DÜZENLEME FORMU
+   
+   Modeli: MenuItemViewModel
+   Mevcut ürünün bilgileri dolu olarak gelir; admin değiştirir ve kaydeder.
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.MenuItemViewModel
+
+@{
+    ViewData["Title"] = $"Düzenle: {Model.Name}";
+    var categories = ViewBag.Categories as List<string> ?? new List<string>();
+}
+
+<div style="max-width: 700px; margin: 0 auto; padding: 30px 20px;">
+
+    @* Başlık ve navigasyon *@
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; flex-wrap:wrap; gap:12px;">
+        <h1 style="color: var(--color-primary-dark);">&#x270E; Ürünü Düzenle</h1>
+        <a href="@Url.Action("Menu", "Admin")" class="btn btn-outline btn-sm">
+            &larr; Menüye Dön
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Düzenleniyor: <strong>@Model.Name</strong> (ID: @Model.Id)
+        </div>
+        <div class="card-body">
+
+            @* DÜZENLEME FORMU *@
+            <form asp-action="EditMenuItem" asp-controller="Admin" method="post">
+                @Html.AntiForgeryToken()
+
+                @* Ürün ID'sini gizli input olarak gönder; Controller hangisini güncelleyeceğini bilir *@
+                <input asp-for="Id" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+                @* Ürün Adı *@
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" type="text" />
+                    <span asp-validation-for="Name" class="field-validation-error"></span>
+                </div>
+
+                @* Açıklama *@
+                <div class="form-group">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" style="min-height: 90px;"></textarea>
+                    <span asp-validation-for="Description" class="field-validation-error"></span>
+                </div>
+
+                @* Fiyat *@
+                <div class="form-group">
+                    <label asp-for="Price"></label>
+                    <input asp-for="Price" type="number" step="0.01" min="0.01" />
+                    <span asp-validation-for="Price" class="field-validation-error"></span>
+                </div>
+
+                @* Kategori: mevcut değer dolu gelir *@
+                <div class="form-group">
+                    <label asp-for="Category"></label>
+                    <input asp-for="Category" type="text" list="category-list" />
+                    <datalist id="category-list">
+                        @foreach (var cat in categories)
+                        {
+                            <option value="@cat"></option>
+                        }
+                    </datalist>
+                    <span asp-validation-for="Category" class="field-validation-error"></span>
+                </div>
+
+                @* Stok durumu *@
+                <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                    <input asp-for="IsAvailable" type="checkbox" style="width:auto; accent-color: var(--color-primary);" />
+                    <label asp-for="IsAvailable" style="margin:0;">Stokta Mevcut</label>
+                </div>
+
+                @* Kaydet ve iptal butonları *@
+                <div style="display:flex; gap:12px; margin-top: 24px;">
+                    <button type="submit" class="btn btn-primary">
+                        &#x2713; Değişiklikleri Kaydet
+                    </button>
+                    <a href="@Url.Action("Menu", "Admin")" class="btn btn-outline">İptal</a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

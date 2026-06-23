@@ -1,0 +1,200 @@
+@* =========================================================
+   Views/Home/JobApplication.cshtml
+   İŞ BAŞVURUSU SAYFASI
+
+   Model: JobApplicationViewModel
+   Düzen: İki sütun (sol: açık pozisyonlar; sağ: başvuru formu)
+   Herkese açık; giriş gerektirmez.
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.JobApplicationViewModel
+
+@{
+    ViewData["Title"] = "İş Başvurusu"; @* Sekme başlığı *@
+    ViewData["Description"] = "LiveLife Coffee ekibine katılmak ister misin? Açık pozisyonlarımızı incele ve başvurunu gönder.";
+}
+
+<div class="job-application-page">
+
+    @* ===================================================
+       SAYFA BAŞLIĞI
+       Ortada büyük başlık ve altyazı.
+       =================================================== *@
+    <div class="page-hero">
+        <h1>Ekibimize Katıl</h1>
+        <p class="page-subtitle">
+            LiveLife Coffee'de çalışmak demek; iyi kahveyi, güzel insanları ve her gün
+            öğrendiğin bir şeyi sevmek demek. Seni de aramızda görmek isteriz!
+        </p>
+    </div>
+
+    @* ===================================================
+       FORM BAŞARIYSA TEŞEKKÜR MESAJI
+       Başvuru gönderildikten sonra form yerine bu mesaj gösterilir.
+       =================================================== *@
+    @if (Model.IsSuccess)
+    {
+        <div class="alert alert-success" style="max-width: 700px; margin: 0 auto 40px; padding: 24px; font-size: 1.05rem;">
+            &#x2705; <strong>Başvurunuz alındı!</strong><br/>
+            Teşekkürler! Formunu inceleyip sana en kısa sürede geri döneceğiz.
+            Aramıza katılmak için sabırsızlanıyoruz &#x1F917;
+        </div>
+    }
+
+    @* ===================================================
+       İKİ SÜTUNLU DÜZEN: Sol + Sağ
+       Sol: Açık pozisyonlar listesi
+       Sağ: Başvuru formu
+       =================================================== *@
+    <div class="job-application-layout">
+
+        @* ===============================================
+           SOL SÜTUN: Açık Pozisyonlar
+           Kafede hangi pozisyonlara aday arandığını listeler.
+           =============================================== *@
+        <div class="job-positions-box">
+            <h3>&#x1F50D; Açık Pozisyonlar</h3>
+
+            @* Barista pozisyonu *@
+            <div class="position-badge">
+                <span class="p-icon">&#x2615;</span>
+                <span>Barista</span>
+            </div>
+
+            @* Kasiyer pozisyonu *@
+            <div class="position-badge">
+                <span class="p-icon">&#x1F4B3;</span>
+                <span>Kasiyer</span>
+            </div>
+
+            @* Garson pozisyonu *@
+            <div class="position-badge">
+                <span class="p-icon">&#x1F37D;</span>
+                <span>Garson</span>
+            </div>
+
+            @* Mutfak personeli *@
+            <div class="position-badge">
+                <span class="p-icon">&#x1F373;</span>
+                <span>Mutfak Personeli</span>
+            </div>
+
+            @* Temizlik personeli *@
+            <div class="position-badge">
+                <span class="p-icon">&#x1F9F9;</span>
+                <span>Temizlik Görevlisi</span>
+            </div>
+
+            @* Stajyer *@
+            <div class="position-badge">
+                <span class="p-icon">&#x1F393;</span>
+                <span>Stajyer (Yarı Zamanlı)</span>
+            </div>
+
+            @* Bilgi kutusu: çalışma saatleri hakkında not *@
+            <div style="margin-top: 20px; padding: 14px; background: var(--color-very-light-green); border-radius: 8px; font-size: 0.85rem; color: var(--color-text-muted);">
+                @* Çalışma saatleri notu *@
+                &#x1F551; Tam/yarı zamanlı pozisyonlar mevcuttur.<br/>
+                Hafta sonu ve akşam vardiyaları da dahil.
+            </div>
+        </div>
+
+        @* ===============================================
+           SAĞ SÜTUN: Başvuru Formu
+           =============================================== *@
+        <div class="job-form-box">
+            <h2>Başvuru Formu</h2>
+            @* Form tanıtım metni *@
+            <p class="form-intro">
+                Aşağıdaki formu doldurun. İnsan kaynakları ekibimiz
+                3-5 iş günü içinde sizinle iletişime geçecektir.
+            </p>
+
+            @* Form başarıyla gönderildiyse formu gizle, yoksa göster *@
+            @if (!Model.IsSuccess)
+            {
+                @* BAŞVURU FORMU
+                   POST isteği HomeController.JobApplication'a gider.
+                   [ValidateAntiForgeryToken] CSRF koruması için zorunlu. *@
+                <form asp-action="JobApplication" asp-controller="Home" method="post">
+
+                    @* CSRF token: ASP.NET otomatik üretir ve doğrular *@
+                    @Html.AntiForgeryToken()
+
+                    @* Doğrulama hataları özet kutusu (ModelState hatalarını gösterir) *@
+                    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+                    @* İki sütunlu satır: Ad Soyad + Telefon *@
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+
+                        @* Ad Soyad alanı *@
+                        <div class="form-group">
+                            <label asp-for="FullName"></label> @* Model'deki Display Name kullanılır *@
+                            <input asp-for="FullName" type="text" placeholder="Adınız Soyadınız" />
+                            <span asp-validation-for="FullName" class="field-validation-error"></span>
+                        </div>
+
+                        @* Telefon alanı *@
+                        <div class="form-group">
+                            <label asp-for="Phone"></label>
+                            <input asp-for="Phone" type="tel" placeholder="05XX XXX XX XX" />
+                            <span asp-validation-for="Phone" class="field-validation-error"></span>
+                        </div>
+
+                    </div>
+
+                    @* E-posta alanı *@
+                    <div class="form-group">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" type="email" placeholder="ornek@email.com" />
+                        <span asp-validation-for="Email" class="field-validation-error"></span>
+                    </div>
+
+                    @* Pozisyon seçimi: dropdown listesi *@
+                    <div class="form-group">
+                        <label asp-for="Position"></label>
+                        @* Pozisyonlar sabit liste; Razor tag helper option içinde C# kabul etmez *@
+                        @* Bu nedenle Html.DropDownList yöntemi kullanılır *@
+                        @Html.DropDownList("Position",
+                            new SelectListItem[] {
+                                new SelectListItem { Value = "",                           Text = "— Başvurmak istediğiniz pozisyonu seçin —", Disabled = true, Selected = string.IsNullOrEmpty(Model.Position) },
+                                new SelectListItem { Value = "Barista",                    Text = "☕ Barista",                Selected = Model.Position == "Barista" },
+                                new SelectListItem { Value = "Kasiyer",                    Text = "💳 Kasiyer",                Selected = Model.Position == "Kasiyer" },
+                                new SelectListItem { Value = "Garson",                     Text = "🍽️ Garson",                 Selected = Model.Position == "Garson" },
+                                new SelectListItem { Value = "Mutfak Personeli",           Text = "🍳 Mutfak Personeli",        Selected = Model.Position == "Mutfak Personeli" },
+                                new SelectListItem { Value = "Temizlik Görevlisi",         Text = "🧹 Temizlik Görevlisi",      Selected = Model.Position == "Temizlik Görevlisi" },
+                                new SelectListItem { Value = "Stajyer (Yarı Zamanlı)",    Text = "🎓 Stajyer (Yarı Zamanlı)", Selected = Model.Position == "Stajyer (Yarı Zamanlı)" }
+                            })
+                        <span asp-validation-for="Position" class="field-validation-error"></span>
+                    </div>
+
+                    @* Motivasyon mektubu / kendini tanıtma alanı *@
+                    <div class="form-group">
+                        <label asp-for="CoverLetter"></label>
+                        <textarea asp-for="CoverLetter" 
+                                  rows="6"
+                                  placeholder="Kendinizi kısaca tanıtın. Neden LiveLife Coffee'de çalışmak istiyorsunuz? Daha önce benzer bir deneyiminiz var mı?"></textarea>
+                        <span asp-validation-for="CoverLetter" class="field-validation-error"></span>
+                    </div>
+
+                    @* Gönder butonu *@
+                    <button type="submit" class="btn btn-primary btn-block">
+                        &#x1F4E8; Başvurumu Gönder
+                    </button>
+
+                </form>
+            }
+            else
+            {
+                @* Başvuru gönderildikten sonra formu gizle; teşekkür sayfasına yönlendir butonu göster *@
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-outline">
+                        &#x1F3E0; Ana Sayfaya Dön
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

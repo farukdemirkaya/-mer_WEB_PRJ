@@ -1,0 +1,95 @@
+@* =========================================================
+   Views/Admin/Login.cshtml
+   ADMİN GİRİŞ SAYFASI
+
+   ÖNEMLİ: Bu sayfa normal kullanıcı giriş sayfasından FARKLIDIR.
+   - Normal kullanıcı girişi → /Account/Login  (e-posta + şifre)
+   - Admin girişi           → /Admin/Login    (kullanıcı adı + şifre)
+
+   Kullanıcı adı alanı type="text"tir; @ işareti GEREKMEMEKTEDİR.
+   ========================================================= *@
+
+@{
+    ViewData["Title"] = "Admin Girişi";
+    Layout = "_Layout";
+}
+
+<div class="form-card" style="border-top: 4px solid #b45309; max-width: 420px;">
+
+    @* Başlık *@
+    <div style="text-align:center; margin-bottom: 28px;">
+        <div style="font-size: 2.5rem; margin-bottom: 8px;">&#x1F6E1;</div>
+        <h1 style="color: #92400e; font-size: 1.5rem; margin-bottom: 4px;">Admin Paneli Girişi</h1>
+        <p style="color: var(--color-text-muted); font-size: 0.85rem;">
+            Bu sayfa yalnızca yöneticiler içindir.
+        </p>
+    </div>
+
+    @* -------------------------------------------------------
+       UYARI KUTUSU: Kullanıcının yanlış sayfada olup olmadığını
+       anlamasına yardımcı olur.
+       ------------------------------------------------------- *@
+    <div class="alert alert-info" style="font-size: 0.85rem; margin-bottom: 20px;">
+        <strong>&#x2139; Not:</strong> Burası admin girişidir. Müşteri hesabınızla 
+        giriş yapmak için 
+        <a href="@Url.Action("Login", "Account")">buraya tıklayın</a>.
+    </div>
+
+    @* Hatalı giriş hata mesajı *@
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-error">
+            <strong>&#x26A0;</strong> @ViewBag.Error
+        </div>
+    }
+
+    @* ---- ADMİN GİRİŞ FORMU ----
+       autocomplete="off": tarayıcının e-posta formatı önermesini engeller
+       Kullanıcı adı type="text"tir; e-posta formatı ARANMAZ
+    *@
+    <form asp-action="Login" asp-controller="Admin" method="post" autocomplete="off">
+        @Html.AntiForgeryToken()
+
+        @* Kullanıcı Adı — type="text", e-posta DEĞİL *@
+        <div class="form-group">
+            <label for="admin-username">Kullanıcı Adı</label>
+            @* 
+               type="text"  → @ işareti olmadan da kabul edilir
+               autocomplete="new-password" → tarayıcının otomatik doldurma/doğrulama yapmasını engeller
+            *@
+            <input type="text"
+                   id="admin-username"
+                   name="username"
+                   placeholder="Kullanıcı adınızı girin"
+                   autocomplete="off"
+                   spellcheck="false"
+                   required />
+        </div>
+
+        @* Parola — type="password" *@
+        <div class="form-group">
+            <label for="admin-password">Parola</label>
+            <input type="password"
+                   id="admin-password"
+                   name="password"
+                   placeholder="Parolanızı girin"
+                   autocomplete="off"
+                   required />
+        </div>
+
+        @* Giriş Butonu *@
+        <button type="submit" class="btn btn-block"
+                style="background-color: #92400e; color: white; padding: 13px; font-size: 1rem; margin-top: 8px;">
+            Giriş Yap
+        </button>
+
+    </form>
+
+    @* Siteye geri dön *@
+    <p style="text-align:center; margin-top: 24px; font-size: 0.85rem;">
+        <a href="@Url.Action("Index", "Home")" style="color: var(--color-text-muted);">
+            &larr; Ana Sayfaya Dön
+        </a>
+    </p>
+
+</div>

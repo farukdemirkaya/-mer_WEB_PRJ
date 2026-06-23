@@ -1,0 +1,77 @@
+@* =========================================================
+   Views/Admin/MessageDetail.cshtml
+   ADMİN - MESAJ DETAYI
+   
+   Modeli: ContactMessage
+   Tek bir iletişim mesajının tam içeriğini gösterir.
+   Sayfa açıldığında otomatik "okundu" işaretlenir (Controller'da).
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.ContactMessage
+
+@{
+    ViewData["Title"] = $"Mesaj: {Model.Subject}";
+}
+
+<div style="max-width: 700px; margin: 0 auto; padding: 30px 20px;">
+
+    @* Geri git *@
+    <a href="@Url.Action("Messages", "Admin")" class="btn btn-outline btn-sm" style="margin-bottom: 20px;">
+        &larr; Mesajlara Dön
+    </a>
+
+    <div class="card">
+        <div class="card-header" style="font-size: 1.1rem;">
+            &#x2709; @Model.Subject
+        </div>
+        <div class="card-body">
+
+            @* Gönderen bilgileri *@
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--color-border);">
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted);">Gönderen</div>
+                    <div style="font-weight: 600;">@Model.FullName</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted);">E-posta</div>
+                    <div>
+                        <a href="mailto:@Model.Email" style="color: var(--color-primary);">@Model.Email</a>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted);">Gönderilme Tarihi</div>
+                    <div>@Model.ReceivedAt.ToString("dd MMMM yyyy, HH:mm", new System.Globalization.CultureInfo("tr-TR"))</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted);">Durum</div>
+                    <div>
+                        @* Okundu/Okunmadı rozeti *@
+                        @if (Model.IsRead)
+                        {
+                            <span style="color: var(--color-success); font-weight: 600;">&#x2713; Okundu</span>
+                        }
+                        else
+                        {
+                            <span style="color: var(--color-error); font-weight: 600;">Okunmadı</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* Mesaj içeriği: önceden belirlenmiş boşlukları koru (white-space: pre-wrap) *@
+            <div style="white-space: pre-wrap; line-height: 1.8; color: var(--color-text-dark);">@Model.Message</div>
+
+        </div>
+    </div>
+
+    @* Gönderene e-posta ile yanıt ver (mailto: linki) *@
+    <div style="margin-top: 20px; display:flex; gap:12px;">
+        <a href="mailto:@Model.Email?subject=RE: @Model.Subject" class="btn btn-primary">
+            &#x2709; E-posta ile Yanıtla
+        </a>
+        <a href="@Url.Action("Messages", "Admin")" class="btn btn-outline">
+            Mesajlara Dön
+        </a>
+    </div>
+
+</div>

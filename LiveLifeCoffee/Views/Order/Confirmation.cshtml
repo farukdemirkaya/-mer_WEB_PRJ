@@ -1,0 +1,85 @@
+@* =========================================================
+   Views/Order/Confirmation.cshtml
+   SİPARİŞ ONAY SAYFASI
+   
+   Modeli: Order
+   Sipariş tamamlandıktan sonra gösterilir.
+   Sipariş numarası, ürün listesi ve genel toplam görüntülenir.
+   ========================================================= *@
+
+@model LiveLifeCoffee.Models.Order
+
+@{
+    ViewData["Title"] = "Sipariş Onaylandı";
+}
+
+<div class="confirmation-page">
+    
+    @* Büyük onay ikonu *@
+    <div class="confirmation-icon">&#x2705;</div>
+
+    @* Başarı başlığı *@
+    <h1>Siparişiniz Alındı!</h1>
+    
+    <p style="color: var(--color-text-muted); margin-top: 8px;">
+        Merhaba <strong>@Model.UserFullName</strong>, siparişiniz başarıyla oluşturuldu.
+    </p>
+
+    @* SİPARİŞ DETAY KUTUSU *@
+    <div class="order-detail-box">
+
+        <h2>Sipariş Detayları</h2>
+
+        @* Sipariş meta bilgileri *@
+        <div class="order-summary-row">
+            <span>Sipariş Numarası</span>
+            @* Sipariş ID'sini 4 haneli sıfır doldurarak göster (örn: #0042) *@
+            <strong>#@Model.Id.ToString("D4")</strong>
+        </div>
+        <div class="order-summary-row">
+            <span>Tarih & Saat</span>
+            @* Tarih formatı: "20 Haziran 2026, 14:35" *@
+            <strong>@Model.OrderedAt.ToString("dd MMMM yyyy, HH:mm", new System.Globalization.CultureInfo("tr-TR"))</strong>
+        </div>
+        <div class="order-summary-row">
+            <span>Durum</span>
+            <span class="status-badge">@Model.Status</span>
+        </div>
+
+        @* Siparişteki ürünlerin listesi *@
+        <h2 style="margin-top: 24px;">Sipariş İçeriği</h2>
+        
+        @foreach (var item in Model.Items)
+        {
+            <div class="order-summary-row">
+                @* Ürün adı ve miktarı *@
+                <span>@item.Name <span style="color: var(--color-text-muted);">x@item.Quantity</span></span>
+                @* Kalem toplam tutarı *@
+                <span>@item.TotalPrice.ToString("N2") ₺</span>
+            </div>
+        }
+
+        @* Genel toplam satırı *@
+        <div class="order-grand-total">
+            <span>Genel Toplam</span>
+            <span>@Model.GrandTotal.ToString("N2") ₺</span>
+        </div>
+
+    </div>
+
+    @* Yönlendirme butonları *@
+    <div style="margin-top: 28px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        
+        @* Ana sayfaya dön *@
+        <a href="@Url.Action("Index", "Home")" class="btn btn-outline">
+            Ana Sayfaya Dön
+        </a>
+        
+        @* Tekrar sipariş ver *@
+        <a href="@Url.Action("Index", "Menu")" class="btn btn-primary">
+            Yeni Sipariş Ver
+        </a>
+
+    </div>
+
+</div>
